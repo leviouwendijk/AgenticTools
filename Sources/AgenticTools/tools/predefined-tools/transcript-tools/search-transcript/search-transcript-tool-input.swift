@@ -1,10 +1,17 @@
 import Agentic
+import Schema
 
+@JSONSchema
 public struct SearchTranscriptToolInput: Sendable, Codable, Hashable {
+    /// Text query to search for in transcript events.
     public let query: String
+    /// Transcript event kinds to search. An empty array includes all kinds.
     public let kinds: [TranscriptEventKind]
+    /// Optional maximum number of search results.
     public let maxResults: Int?
+    /// Whether to include full event text in search results.
     public let includeFullText: Bool
+    /// Whether text matching is case-sensitive.
     public let caseSensitive: Bool
 
     public init(

@@ -4,7 +4,9 @@ import AgenticWorkspace
 import Foundation
 import Primitives
 
-public struct AgentAdvisorTool: AgentTool {
+public struct AgentAdvisorTool: TypedInstanceAgentTool {
+    public typealias Input = AgentAdvisorToolInput
+
     public static let identifier = AgentAdvisorToolDefaults.identifier
 
     public var provider: any AgentAdvisorModelProviding
@@ -24,10 +26,6 @@ public struct AgentAdvisorTool: AgentTool {
 
     public var description: String {
         "Ask the configured advisor model for bounded, advisory reasoning. The advisor receives no tools and cannot authorize actions."
-    }
-
-    public var inputSchema: JSONValue? {
-        Self.inputSchema
     }
 
     public var risk: ActionRisk {
@@ -134,27 +132,6 @@ public struct AgentAdvisorTool: AgentTool {
 }
 
 private extension AgentAdvisorTool {
-    static let inputSchema: JSONValue = .object([
-        "type": .string("object"),
-        "required": .array([
-            .string("prompt"),
-        ]),
-        "properties": .object([
-            "prompt": .object([
-                "type": .string("string"),
-                "description": .string("The concrete question or decision to ask the advisor model about."),
-            ]),
-            "context": .object([
-                "type": .string("string"),
-                "description": .string("Optional bounded context already gathered by the executor."),
-            ]),
-            "instruction": .object([
-                "type": .string("string"),
-                "description": .string("Optional extra instruction for the advisor response shape."),
-            ]),
-        ]),
-    ])
-
     static func normalizedPrompt(
         _ value: String
     ) throws -> String {

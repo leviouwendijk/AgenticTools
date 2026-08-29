@@ -3,7 +3,9 @@ import AgenticExecution
 import AgenticWorkspace
 import Primitives
 
-public struct SummarizeTranscriptWindowTool: AgentTool {
+public struct SummarizeTranscriptWindowTool: TypedInstanceAgentTool {
+    public typealias Input = SummarizeTranscriptWindowToolInput
+
     public static let identifier: AgentToolIdentifier = "summarize_transcript_window"
     public static let description = "Create a deterministic summary of a transcript event window."
     public static let risk: ActionRisk = .observe

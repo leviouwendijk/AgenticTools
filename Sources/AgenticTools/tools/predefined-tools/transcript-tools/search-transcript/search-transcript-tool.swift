@@ -3,7 +3,9 @@ import AgenticExecution
 import AgenticWorkspace
 import Primitives
 
-public struct SearchTranscriptTool: AgentTool {
+public struct SearchTranscriptTool: TypedInstanceAgentTool {
+    public typealias Input = SearchTranscriptToolInput
+
     public static let identifier: AgentToolIdentifier = "search_transcript"
     public static let description = "Search transcript events in an attached transcript store."
     public static let risk: ActionRisk = .observe

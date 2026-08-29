@@ -3,7 +3,9 @@ import AgenticExecution
 import AgenticWorkspace
 import Primitives
 
-public struct LoadSkillTool: AgentTool {
+public struct LoadSkillTool: TypedInstanceAgentTool {
+    public typealias Input = LoadSkillToolInput
+
     public static let identifier: AgentToolIdentifier = "load_skill"
     public static let description = "Load the full instructions for one available skill by id or name."
     public static let risk: ActionRisk = .observe

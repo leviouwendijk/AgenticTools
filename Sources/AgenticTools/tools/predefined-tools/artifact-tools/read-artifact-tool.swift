@@ -2,10 +2,15 @@ import Agentic
 import AgenticExecution
 import AgenticWorkspace
 import Primitives
+import Schema
 
+@JSONSchema
 public struct ReadArtifactToolInput: Sendable, Codable, Hashable {
+    /// Exact artifact identifier to read.
     public let id: String
+    /// Whether to include artifact content. Defaults to true when omitted.
     public let includeContent: Bool?
+    /// Optional maximum number of content characters to return.
     public let maxCharacters: Int?
 
     public init(
@@ -50,7 +55,9 @@ public struct ReadArtifactToolOutput: Sendable, Codable, Hashable {
     }
 }
 
-public struct ReadArtifactTool: AgentTool {
+public struct ReadArtifactTool: TypedInstanceAgentTool {
+    public typealias Input = ReadArtifactToolInput
+
     public static let identifier: AgentToolIdentifier = "read_artifact"
     public static let description = "Read a durable artifact emitted for the current Agentic session."
     public static let risk: ActionRisk = .observe

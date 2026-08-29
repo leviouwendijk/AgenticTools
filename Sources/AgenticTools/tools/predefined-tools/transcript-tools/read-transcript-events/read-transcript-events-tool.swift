@@ -3,7 +3,9 @@ import AgenticExecution
 import AgenticWorkspace
 import Primitives
 
-public struct ReadTranscriptEventsTool: AgentTool {
+public struct ReadTranscriptEventsTool: TypedInstanceAgentTool {
+    public typealias Input = ReadTranscriptEventsToolInput
+
     public static let identifier: AgentToolIdentifier = "read_transcript_events"
     public static let description = "Read selected transcript events from an attached transcript store."
     public static let risk: ActionRisk = .observe

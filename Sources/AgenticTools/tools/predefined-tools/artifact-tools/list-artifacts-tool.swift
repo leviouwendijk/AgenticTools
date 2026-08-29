@@ -2,10 +2,15 @@ import Agentic
 import AgenticExecution
 import AgenticWorkspace
 import Primitives
+import Schema
 
+@JSONSchema
 public struct ListArtifactsToolInput: Sendable, Codable, Hashable {
+    /// Artifact kinds to include. An empty array includes every kind.
     public let kinds: [AgentArtifactKind]
+    /// Whether to list newest artifacts first. Defaults to true when omitted.
     public let latestFirst: Bool?
+    /// Optional maximum number of artifacts to return.
     public let limit: Int?
 
     public init(
@@ -46,7 +51,9 @@ public struct ListArtifactsToolOutput: Sendable, Codable, Hashable {
     }
 }
 
-public struct ListArtifactsTool: AgentTool {
+public struct ListArtifactsTool: TypedInstanceAgentTool {
+    public typealias Input = ListArtifactsToolInput
+
     public static let identifier: AgentToolIdentifier = "list_artifacts"
     public static let description = "List durable artifacts emitted for the current Agentic session."
     public static let risk: ActionRisk = .observe

@@ -3,13 +3,21 @@ import AgenticExecution
 import AgenticWorkspace
 import Foundation
 import Primitives
+import Schema
 
+@JSONSchema
 public struct EmitArtifactToolInput: Sendable, Codable, Hashable {
+    /// Artifact kind to emit.
     public let kind: AgentArtifactKind
+    /// Optional human-readable artifact title.
     public let title: String?
+    /// Optional preferred artifact filename.
     public let filename: String?
+    /// Optional MIME/content type.
     public let contentType: String?
+    /// Artifact content to persist.
     public let content: String
+    /// Additional artifact metadata.
     public let metadata: [String: String]
 
     public init(
@@ -45,7 +53,9 @@ public struct EmitArtifactToolOutput: Sendable, Codable, Hashable {
     }
 }
 
-public struct EmitArtifactTool: AgentTool {
+public struct EmitArtifactTool: TypedInstanceAgentTool {
+    public typealias Input = EmitArtifactToolInput
+
     public static let identifier: AgentToolIdentifier = "emit_artifact"
     public static let description = "Emit a durable runtime artifact under the current Agentic session artifact directory."
     public static let risk: ActionRisk = .boundedmutate

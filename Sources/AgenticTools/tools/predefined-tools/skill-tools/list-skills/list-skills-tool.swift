@@ -3,7 +3,9 @@ import AgenticExecution
 import AgenticWorkspace
 import Primitives
 
-public struct ListSkillsTool: AgentTool {
+public struct ListSkillsTool: TypedInstanceAgentTool {
+    public typealias Input = ListSkillsToolInput
+
     public static let identifier: AgentToolIdentifier = "list_skills"
     public static let description = "List available skills and their summaries."
     public static let risk: ActionRisk = .observe

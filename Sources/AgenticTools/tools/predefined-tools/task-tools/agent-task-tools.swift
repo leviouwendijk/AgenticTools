@@ -2,7 +2,10 @@ import Agentic
 import AgenticExecution
 import AgenticWorkspace
 import Primitives
+import Schema
 
+/// Create a new agent task.
+@JSONSchema
 public struct CreateAgentTaskToolInput: Sendable, Codable, Hashable {
     public let subject: String
     public let description: String
@@ -28,6 +31,8 @@ public struct CreateAgentTaskToolInput: Sendable, Codable, Hashable {
     }
 }
 
+/// Update mutable fields on an existing agent task.
+@JSONSchema
 public struct UpdateAgentTaskToolInput: Sendable, Codable, Hashable {
     public let id: AgentTaskIdentifier
     public let subject: String?
@@ -62,6 +67,8 @@ public struct UpdateAgentTaskToolInput: Sendable, Codable, Hashable {
     }
 }
 
+/// List agent tasks with optional status, owner, readiness, and completion filters.
+@JSONSchema
 public struct ListAgentTasksToolInput: Sendable, Codable, Hashable {
     public let statuses: [AgentTaskStatus]
     public let owner: String?
@@ -81,6 +88,8 @@ public struct ListAgentTasksToolInput: Sendable, Codable, Hashable {
     }
 }
 
+/// Read one agent task by identifier.
+@JSONSchema
 public struct GetAgentTaskToolInput: Sendable, Codable, Hashable {
     public let id: AgentTaskIdentifier
 
@@ -91,6 +100,8 @@ public struct GetAgentTaskToolInput: Sendable, Codable, Hashable {
     }
 }
 
+/// Claim an agent task for an owner.
+@JSONSchema
 public struct ClaimAgentTaskToolInput: Sendable, Codable, Hashable {
     public let id: AgentTaskIdentifier
     public let owner: String
@@ -104,6 +115,8 @@ public struct ClaimAgentTaskToolInput: Sendable, Codable, Hashable {
     }
 }
 
+/// Mark an agent task complete.
+@JSONSchema
 public struct CompleteAgentTaskToolInput: Sendable, Codable, Hashable {
     public let id: AgentTaskIdentifier
 
@@ -136,7 +149,9 @@ public struct AgentTaskListToolOutput: Sendable, Codable, Hashable {
     }
 }
 
-public struct CreateAgentTaskTool: AgentTool {
+public struct CreateAgentTaskTool: TypedInstanceAgentTool {
+    public typealias Input = CreateAgentTaskToolInput
+
     public static let identifier: AgentToolIdentifier = "task_create"
     public static let description = "Create a durable Agentic task."
     public static let risk: ActionRisk = .boundedmutate
@@ -210,7 +225,9 @@ public struct CreateAgentTaskTool: AgentTool {
     }
 }
 
-public struct UpdateAgentTaskTool: AgentTool {
+public struct UpdateAgentTaskTool: TypedInstanceAgentTool {
+    public typealias Input = UpdateAgentTaskToolInput
+
     public static let identifier: AgentToolIdentifier = "task_update"
     public static let description = "Update a durable Agentic task."
     public static let risk: ActionRisk = .boundedmutate
@@ -288,7 +305,9 @@ public struct UpdateAgentTaskTool: AgentTool {
     }
 }
 
-public struct ListAgentTasksTool: AgentTool {
+public struct ListAgentTasksTool: TypedInstanceAgentTool {
+    public typealias Input = ListAgentTasksToolInput
+
     public static let identifier: AgentToolIdentifier = "task_list"
     public static let description = "List durable Agentic tasks."
     public static let risk: ActionRisk = .observe
@@ -352,7 +371,9 @@ public struct ListAgentTasksTool: AgentTool {
     }
 }
 
-public struct GetAgentTaskTool: AgentTool {
+public struct GetAgentTaskTool: TypedInstanceAgentTool {
+    public typealias Input = GetAgentTaskToolInput
+
     public static let identifier: AgentToolIdentifier = "task_get"
     public static let description = "Read a durable Agentic task."
     public static let risk: ActionRisk = .observe
@@ -418,7 +439,9 @@ public struct GetAgentTaskTool: AgentTool {
     }
 }
 
-public struct ClaimAgentTaskTool: AgentTool {
+public struct ClaimAgentTaskTool: TypedInstanceAgentTool {
+    public typealias Input = ClaimAgentTaskToolInput
+
     public static let identifier: AgentToolIdentifier = "task_claim"
     public static let description = "Claim a durable Agentic task for an owner."
     public static let risk: ActionRisk = .boundedmutate
@@ -488,7 +511,9 @@ public struct ClaimAgentTaskTool: AgentTool {
     }
 }
 
-public struct CompleteAgentTaskTool: AgentTool {
+public struct CompleteAgentTaskTool: TypedInstanceAgentTool {
+    public typealias Input = CompleteAgentTaskToolInput
+
     public static let identifier: AgentToolIdentifier = "task_complete"
     public static let description = "Complete a durable Agentic task and unblock dependents."
     public static let risk: ActionRisk = .boundedmutate
