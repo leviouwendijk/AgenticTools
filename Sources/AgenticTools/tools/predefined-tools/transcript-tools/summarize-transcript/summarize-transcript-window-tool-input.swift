@@ -1,5 +1,6 @@
 import Agentic
 import Schema
+import SchemaMacros
 
 @JSONSchema
 public struct SummarizeTranscriptWindowToolInput: Sendable, Codable, Hashable {

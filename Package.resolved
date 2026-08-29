@@ -1,5 +1,5 @@
 {
-  "originHash" : "fdab9bdae848e2cb0f01180d94cf750cb69e6f9e799453eb9e3fe3108d13286f",
+  "originHash" : "06408c712c8b53bb76120f76d1fa6b5a41cca6078be5f1d8de94235c95ac5993",
   "pins" : [
     {
       "identity" : "agentic",
@@ -7,7 +7,7 @@
       "location" : "https://github.com/leviouwendijk/Agentic.git",
       "state" : {
         "branch" : "master",
-        "revision" : "b8cb0d1746dc2e2a40d64a91dd6c84967be08dcd"
+        "revision" : "3e0fca006137bdf31b6cc85ccc1cf8ee490c2793"
       }
     },
     {
@@ -16,7 +16,7 @@
       "location" : "https://github.com/leviouwendijk/AgenticExecution.git",
       "state" : {
         "branch" : "master",
-        "revision" : "6a858bd5034b2d3913c2ce28f05e00e064037428"
+        "revision" : "86c78fc95e8a1a4a7eb87be59cbae46577ea9091"
       }
     },
     {
@@ -43,7 +43,7 @@
       "location" : "https://github.com/leviouwendijk/Difference.git",
       "state" : {
         "branch" : "master",
-        "revision" : "cf346412c40419e9661d3627cde3bcebba03a090"
+        "revision" : "7d295238c789f009fd720f3cf5ca8e730068c0c5"
       }
     },
     {
@@ -115,7 +115,7 @@
       "location" : "https://github.com/leviouwendijk/Path.git",
       "state" : {
         "branch" : "master",
-        "revision" : "8f99bc23b206ce37b81dcedf86142e795932cb19"
+        "revision" : "95fefcdcb3b27fac6163cc998911fcc8a223ccf1"
       }
     },
     {
@@ -169,7 +169,16 @@
       "location" : "https://github.com/leviouwendijk/Schema.git",
       "state" : {
         "branch" : "master",
-        "revision" : "4fb4eba584de6e6714790655d602b6daa3ae4a01"
+        "revision" : "c1b0f99a0b7ffdda0e2a566b656709996a4a3ae3"
+      }
+    },
+    {
+      "identity" : "schemamacros",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/leviouwendijk/SchemaMacros.git",
+      "state" : {
+        "branch" : "master",
+        "revision" : "2441b49a5159c375b094672a0ba0ae338829ec32"
       }
     },
     {
@@ -214,7 +223,7 @@
       "location" : "https://github.com/leviouwendijk/Terminal.git",
       "state" : {
         "branch" : "master",
-        "revision" : "e06373d224cae5570a4ef42dddb281ea3d33ec2d"
+        "revision" : "16e1744d0412df4dbfcd181b6725241e23939055"
       }
     },
     {

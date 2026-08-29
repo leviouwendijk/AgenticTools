@@ -1,4 +1,5 @@
 import Schema
+import SchemaMacros
 
 /// Load one Agentic skill by identifier or name.
 @JSONSchema

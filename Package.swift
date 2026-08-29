@@ -37,6 +37,10 @@ let package = Package(
             branch: "master"
         ),
         .package(
+            url: "https://github.com/leviouwendijk/SchemaMacros.git",
+            branch: "master"
+        ),
+        .package(
             url: "https://github.com/leviouwendijk/Search.git",
             branch: "master"
         ),
@@ -64,6 +68,10 @@ let package = Package(
                 .product(
                     name: "Schema",
                     package: "Schema"
+                ),
+                .product(
+                    name: "SchemaMacros",
+                    package: "SchemaMacros"
                 ),
                 .product(
                     name: "Search",
