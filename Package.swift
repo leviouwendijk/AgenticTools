@@ -14,6 +14,12 @@ let package = Package(
                 "AgenticTools",
             ]
         ),
+        .executable(
+            name: "atooltest",
+            targets: [
+                "AgenticToolsTestFlows",
+            ]
+        ),
     ],
     dependencies: [
         .package(
@@ -42,6 +48,10 @@ let package = Package(
         ),
         .package(
             url: "https://github.com/leviouwendijk/Search.git",
+            branch: "master"
+        ),
+        .package(
+            url: "https://github.com/leviouwendijk/TestFlows.git",
             branch: "master"
         ),
     ],
@@ -76,6 +86,32 @@ let package = Package(
                 .product(
                     name: "Search",
                     package: "Search"
+                ),
+            ]
+        ),
+        .executableTarget(
+            name: "AgenticToolsTestFlows",
+            dependencies: [
+                "AgenticTools",
+                .product(
+                    name: "Agentic",
+                    package: "Agentic"
+                ),
+                .product(
+                    name: "AgenticExecution",
+                    package: "AgenticExecution"
+                ),
+                .product(
+                    name: "AgenticWorkspace",
+                    package: "AgenticWorkspace"
+                ),
+                .product(
+                    name: "Primitives",
+                    package: "Primitives"
+                ),
+                .product(
+                    name: "TestFlows",
+                    package: "TestFlows"
                 ),
             ]
         ),
