@@ -29,6 +29,19 @@ enum AgenticToolsFlowSuite:
                 .runFindToolsDiscoveryActivation()
         },
         TestFlow(
+            "find-tools-search-quality",
+            tags: [
+                "agentic-tools",
+                "tools",
+                "discovery",
+                "search",
+                "ranking",
+            ]
+        ) {
+            try await AgenticToolsFlowTesting
+                .runFindToolsSearchQuality()
+        },
+        TestFlow(
             "find-tools-input-bounds",
             tags: [
                 "agentic-tools",
