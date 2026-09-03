@@ -73,6 +73,72 @@ enum AgenticToolsFlowTesting {
             "discoverable runtime begins with only find_tools exposed"
         )
 
+        let greetingOutputValue = try await findTools.call(
+            input: try JSONToolBridge.encode(
+                FindToolsToolInput(
+                    query: "hi"
+                )
+            ),
+            workspace: nil
+        )
+
+        let greetingOutput = try JSONToolBridge.decode(
+            FindToolsToolOutput.self,
+            from: greetingOutputValue
+        )
+
+        try Expect.equal(
+            greetingOutput.tools.isEmpty,
+            true,
+            "low-signal greeting returns no discovered tools"
+        )
+
+        try Expect.equal(
+            greetingOutput.activated.isEmpty,
+            true,
+            "low-signal greeting activates no tools"
+        )
+
+        let afterGreeting = try await exposure
+            .definitions(
+                in: runtimeRegistry
+            )
+            .map(\.name)
+
+        try Expect.equal(
+            afterGreeting,
+            [
+                "find_tools",
+            ],
+            "low-signal discovery leaves exposure unchanged"
+        )
+
+        let unrelatedOutputValue = try await findTools.call(
+            input: try JSONToolBridge.encode(
+                FindToolsToolInput(
+                    query: "qzxwvv"
+                )
+            ),
+            workspace: nil
+        )
+
+        let unrelatedOutput = try JSONToolBridge.decode(
+            FindToolsToolOutput.self,
+            from: unrelatedOutputValue
+        )
+
+        try Expect.equal(
+            unrelatedOutput.tools.isEmpty,
+            true,
+            "unrelated capability query returns no tools"
+        )
+
+        try Expect.equal(
+            unrelatedOutput.activated.isEmpty,
+            true,
+            "unrelated capability query activates no tools"
+        )
+
         let outputValue = try await findTools.call(
             input: try JSONToolBridge.encode(
                 FindToolsToolInput(

@@ -77,8 +77,26 @@ public struct FindToolsTool:
                 $0.identifier != Self.identifier
             }
 
+        let searchableDefinitions = definitions.filter { definition in
+            hasCapabilityEvidence(
+                query: query,
+                identifier: definition.identifier.rawValue,
+                description: definition.description
+            )
+        }
+
+        guard !searchableDefinitions.isEmpty else {
+            return try JSONToolBridge.encode(
+                FindToolsToolOutput(
+                    query: query,
+                    tools: [],
+                    activated: []
+                )
+            )
+        }
+
         let definitionsByIdentifier = Dictionary(
-            uniqueKeysWithValues: definitions.map { definition in
+            uniqueKeysWithValues: searchableDefinitions.map { definition in
                 (
                     definition.identifier,
                     definition
@@ -87,7 +105,7 @@ public struct FindToolsTool:
         )
 
         let corpus = SearchCorpus(
-            documents: definitions.map { definition in
+            documents: searchableDefinitions.map { definition in
                 SearchDocument(
                     id: definition.identifier,
                     text: [
@@ -140,6 +158,108 @@ public struct FindToolsTool:
 }
 
 private extension FindToolsTool {
+    func hasCapabilityEvidence(
+        query: String,
+        identifier: String,
+        description: String
+    ) -> Bool {
+        let queryTerms = capabilityTerms(
+            in: query
+        )
+
+        guard !queryTerms.isEmpty else {
+            return false
+        }
+
+        let candidateTerms = normalizedTerms(
+            in: [
+                identifier,
+                description,
+            ]
+            .joined(separator: " ")
+        )
+
+        return queryTerms.contains { queryTerm in
+            candidateTerms.contains { candidateTerm in
+                termsOverlap(
+                    queryTerm,
+                    candidateTerm
+                )
+            }
+        }
+    }
+
+    func capabilityTerms(
+        in value: String
+    ) -> [String] {
+        let ignoredTerms: Set<String> = [
+            "and",
+            "can",
+            "could",
+            "find",
+            "help",
+            "need",
+            "please",
+            "that",
+            "the",
+            "this",
+            "tool",
+            "tools",
+            "use",
+            "want",
+            "with",
+            "you",
+        ]
+
+        return normalizedTerms(
+            in: value
+        ).filter { term in
+            term.count >= 3
+                && !ignoredTerms.contains(term)
+        }
+    }
+
+    func normalizedTerms(
+        in value: String
+    ) -> [String] {
+        value
+            .lowercased()
+            .split { character in
+                !character.isLetter
+                    && !character.isNumber
+            }
+            .map(String.init)
+            .map { term in
+                if term.count > 4,
+                   term.hasSuffix("ies") {
+                    return String(
+                        term.dropLast(3)
+                    ) + "y"
+                }
+
+                return term
+            }
+    }
+
+    func termsOverlap(
+        _ lhs: String,
+        _ rhs: String
+    ) -> Bool {
+        if lhs == rhs {
+            return true
+        }
+
+        guard min(
+            lhs.count,
+            rhs.count
+        ) >= 4 else {
+            return false
+        }
+
+        return lhs.hasPrefix(rhs)
+            || rhs.hasPrefix(lhs)
+    }
+
     func normalizedQuery(
         _ query: String
     ) throws -> String {
