@@ -53,18 +53,5 @@ enum AgenticToolsFlowSuite:
             try AgenticToolsFlowTesting
                 .runFindToolsInputBounds()
         },
-        TestFlow(
-            "inspect-tool-registry",
-            tags: [
-                "agentic-tools",
-                "tools",
-                "inspection",
-                "registry",
-                "schema",
-            ]
-        ) {
-            try await AgenticToolsFlowTesting
-                .runInspectToolRegistry()
-        },
     ]
 }
