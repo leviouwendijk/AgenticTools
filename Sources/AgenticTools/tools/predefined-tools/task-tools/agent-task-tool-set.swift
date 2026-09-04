@@ -13,27 +13,25 @@ public struct AgentTaskToolSet: AgentToolSet {
     public func register(
         into registry: inout ToolRegistry
     ) throws {
-        try registry.register(
-            [
-                CreateAgentTaskTool(
-                    manager: manager
-                ),
-                UpdateAgentTaskTool(
-                    manager: manager
-                ),
-                ListAgentTasksTool(
-                    manager: manager
-                ),
-                GetAgentTaskTool(
-                    manager: manager
-                ),
-                ClaimAgentTaskTool(
-                    manager: manager
-                ),
-                CompleteAgentTaskTool(
-                    manager: manager
-                )
-            ]
-        )
+        try registry.register {
+            CreateAgentTaskTool(
+                manager: manager
+            )
+            UpdateAgentTaskTool(
+                manager: manager
+            )
+            ListAgentTasksTool(
+                manager: manager
+            )
+            GetAgentTaskTool(
+                manager: manager
+            )
+            ClaimAgentTaskTool(
+                manager: manager
+            )
+            CompleteAgentTaskTool(
+                manager: manager
+            )
+        }
     }
 }

@@ -3,8 +3,9 @@ import AgenticExecution
 import AgenticWorkspace
 import Primitives
 
-public struct LoadSkillTool: TypedInstanceAgentTool {
+public struct LoadSkillTool: AgentTool {
     public typealias Input = LoadSkillToolInput
+    public typealias Output = LoadSkillToolOutput
 
     public static let identifier: AgentToolIdentifier = "load_skill"
     public static let description = "Load the full instructions for one available skill by id or name."
@@ -31,52 +32,42 @@ public struct LoadSkillTool: TypedInstanceAgentTool {
     }
 
     public func preflight(
-        input: JSONValue,
-        workspace: AgentWorkspace?
+        _ input: Input,
+        context: AgentToolExecutionContext
     ) async throws -> ToolPreflight {
-        let decoded = try JSONToolBridge.decode(
-            LoadSkillToolInput.self,
-            from: input
-        )
 
         let lookup = try lookupValue(
-            from: decoded
+            from: input
         )
 
         return .init(
             toolName: name,
             risk: risk,
-            workspaceRoot: workspace?.rootURL.path,
+            workspaceRoot: context.workspace?.rootURL.path,
             summary: "Load skill '\(lookup)'.",
             sideEffects: risk.defaultSideEffects
         )
     }
 
     public func call(
-        input: JSONValue,
-        workspace _: AgentWorkspace?
-    ) async throws -> JSONValue {
-        let decoded = try JSONToolBridge.decode(
-            LoadSkillToolInput.self,
-            from: input
-        )
+        _ input: Input,
+        context _: AgentToolExecutionContext
+    ) async throws -> Output {
 
         let lookup = try lookupValue(
-            from: decoded
+            from: input
         )
         let skill = try registry.requireSkill(
             matching: lookup
         )
 
-        return try JSONToolBridge.encode(
-            LoadSkillToolOutput(
+        return LoadSkillToolOutput(
                 id: skill.identifier.rawValue,
                 name: skill.name,
                 summary: skill.summary,
                 content: skill.contextText,
-                metadata: decoded.includeMetadata == true ? skill.metadata : nil
+                metadata: input.includeMetadata == true ? skill.metadata : nil
             )
-        )
     }
 }
 

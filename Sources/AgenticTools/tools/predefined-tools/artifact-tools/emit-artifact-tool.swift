@@ -54,8 +54,9 @@ public struct EmitArtifactToolOutput: Sendable, Codable, Hashable {
     }
 }
 
-public struct EmitArtifactTool: TypedInstanceAgentTool {
+public struct EmitArtifactTool: AgentTool {
     public typealias Input = EmitArtifactToolInput
+    public typealias Output = EmitArtifactToolOutput
 
     public static let identifier: AgentToolIdentifier = "emit_artifact"
     public static let description = "Emit a durable runtime artifact under the current Agentic session artifact directory."
@@ -82,24 +83,20 @@ public struct EmitArtifactTool: TypedInstanceAgentTool {
     }
 
     public func preflight(
-        input: JSONValue,
-        workspace: AgentWorkspace?
+        _ input: Input,
+        context: AgentToolExecutionContext
     ) async throws -> ToolPreflight {
-        let decoded = try JSONToolBridge.decode(
-            EmitArtifactToolInput.self,
-            from: input
-        )
 
         return .init(
             toolName: name,
             risk: risk,
-            workspaceRoot: workspace?.rootURL.path,
+            workspaceRoot: context.workspace?.rootURL.path,
             targetPaths: [],
             summary: summary(
-                for: decoded
+                for: input
             ),
             estimatedWriteCount: 2,
-            estimatedByteCount: Data(decoded.content.utf8).count,
+            estimatedByteCount: Data(input.content.utf8).count,
             sideEffects: [
                 "writes runtime artifact metadata",
                 "writes runtime artifact content"
@@ -108,36 +105,28 @@ public struct EmitArtifactTool: TypedInstanceAgentTool {
     }
 
     public func call(
-        input: JSONValue,
-        workspace: AgentWorkspace?
-    ) async throws -> JSONValue {
-        _ = workspace
-
-        let decoded = try JSONToolBridge.decode(
-            EmitArtifactToolInput.self,
-            from: input
-        )
+        _ input: Input,
+        context: AgentToolExecutionContext
+    ) async throws -> Output {
 
         let record = try await store.emit(
             .init(
-                kind: decoded.kind,
-                title: decoded.title,
-                filename: decoded.filename,
-                contentType: decoded.contentType,
-                content: decoded.content,
-                metadata: decoded.metadata
+                kind: input.kind,
+                title: input.title,
+                filename: input.filename,
+                contentType: input.contentType,
+                content: input.content,
+                metadata: input.metadata
             )
         )
 
-        return try JSONToolBridge.encode(
-            EmitArtifactToolOutput(
+        return EmitArtifactToolOutput(
                 artifact: record.artifact,
-                contentCharacterCount: decoded.content.count,
+                contentCharacterCount: input.content.count,
                 approximateTokenCount: approximateTokenCount(
-                    forCharacterCount: decoded.content.count
+                    forCharacterCount: input.content.count
                 )
             )
-        )
     }
 }
 

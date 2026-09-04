@@ -12,35 +12,33 @@ extension AgenticToolsFlowTesting {
     {
         var catalog = ToolRegistry()
 
-        try catalog.register(
-            [
-                FindToolsSearchQualityProbeTool(
-                    identifier: "git_repository_state",
-                    description: "Inspect Git repository status and working-tree state without mutating the repository.",
-                    risk: .observe
-                ),
-                FindToolsSearchQualityProbeTool(
-                    identifier: "git_diff",
-                    description: "Observe tracked Git working-tree and staged differences.",
-                    risk: .observe
-                ),
-                FindToolsSearchQualityProbeTool(
-                    identifier: "git_push",
-                    description: "Push committed Git history to a configured remote repository.",
-                    risk: .privileged
-                ),
-                FindToolsSearchQualityProbeTool(
-                    identifier: "git_diff_helper",
-                    description: "Helper documentation mentioning git_diff and Git differences repeatedly.",
-                    risk: .observe
-                ),
-                FindToolsSearchQualityProbeTool(
-                    identifier: "read_file",
-                    description: "Read a bounded source file from the current workspace.",
-                    risk: .observe
-                ),
-            ] as [any AgentTool]
-        )
+        try catalog.register {
+            FindToolsSearchQualityProbeTool(
+                identifier: "git_repository_state",
+                description: "Inspect Git repository status and working-tree state without mutating the repository.",
+                risk: .observe
+            )
+            FindToolsSearchQualityProbeTool(
+                identifier: "git_diff",
+                description: "Observe tracked Git working-tree and staged differences.",
+                risk: .observe
+            )
+            FindToolsSearchQualityProbeTool(
+                identifier: "git_push",
+                description: "Push committed Git history to a configured remote repository.",
+                risk: .privileged
+            )
+            FindToolsSearchQualityProbeTool(
+                identifier: "git_diff_helper",
+                description: "Helper documentation mentioning git_diff and Git differences repeatedly.",
+                risk: .observe
+            )
+            FindToolsSearchQualityProbeTool(
+                identifier: "read_file",
+                description: "Read a bounded source file from the current workspace.",
+                risk: .observe
+            )
+        }
 
         let exposure = AgentToolExposure(
             policy: .discoverable(
@@ -54,17 +52,12 @@ extension AgenticToolsFlowTesting {
             exposure: exposure
         )
 
-        let naturalOutput = try JSONToolBridge.decode(
-            FindToolsToolOutput.self,
-            from: try await findTools.call(
-                input: try JSONToolBridge.encode(
-                    FindToolsToolInput(
-                        query: "git status",
-                        maximumResults: 3
-                    )
-                ),
-                workspace: nil
-            )
+        let naturalOutput = try await findTools.call(
+            FindToolsToolInput(
+                query: "git status",
+                maximumResults: 3
+            ),
+            context: .init()
         )
 
         try Expect.equal(
@@ -97,17 +90,12 @@ extension AgenticToolsFlowTesting {
             "activation reports the selected tool set without requiring ranking order"
         )
 
-        let exactOutput = try JSONToolBridge.decode(
-            FindToolsToolOutput.self,
-            from: try await findTools.call(
-                input: try JSONToolBridge.encode(
-                    FindToolsToolInput(
-                        query: "git_diff",
-                        maximumResults: 3
-                    )
-                ),
-                workspace: nil
-            )
+        let exactOutput = try await findTools.call(
+            FindToolsToolInput(
+                query: "git_diff",
+                maximumResults: 3
+            ),
+            context: .init()
         )
 
         try Expect.equal(
@@ -120,17 +108,12 @@ extension AgenticToolsFlowTesting {
             "exact identifier is pinned ahead of fuzzy competitors"
         )
 
-        let descriptionOutput = try JSONToolBridge.decode(
-            FindToolsToolOutput.self,
-            from: try await findTools.call(
-                input: try JSONToolBridge.encode(
-                    FindToolsToolInput(
-                        query: "read source file",
-                        maximumResults: 2
-                    )
-                ),
-                workspace: nil
-            )
+        let descriptionOutput = try await findTools.call(
+            FindToolsToolInput(
+                query: "read source file",
+                maximumResults: 2
+            ),
+            context: .init()
         )
 
         try Expect.equal(
@@ -143,16 +126,11 @@ extension AgenticToolsFlowTesting {
             "description evidence contributes independently to capability ranking"
         )
 
-        let lowSignalOutput = try JSONToolBridge.decode(
-            FindToolsToolOutput.self,
-            from: try await findTools.call(
-                input: try JSONToolBridge.encode(
-                    FindToolsToolInput(
-                        query: "hi"
-                    )
-                ),
-                workspace: nil
-            )
+        let lowSignalOutput = try await findTools.call(
+            FindToolsToolInput(
+                query: "hi"
+            ),
+            context: .init()
         )
 
         try Expect.equal(
@@ -186,19 +164,18 @@ extension AgenticToolsFlowTesting {
     }
 }
 
-private struct FindToolsSearchQualityProbeTool:
-    TypedInstanceAgentTool
-{
+private struct FindToolsSearchQualityProbeTool: AgentTool {
     typealias Input = FindToolsToolInput
+    typealias Output = FindToolsToolInput
 
     let identifier: AgentToolIdentifier
     let description: String
     let risk: ActionRisk
 
     func call(
-        input: JSONValue,
-        workspace _: AgentWorkspace?
-    ) async throws -> JSONValue {
+        _ input: Input,
+        context _: AgentToolExecutionContext
+    ) async throws -> Output {
         input
     }
 }

@@ -150,8 +150,9 @@ public struct AgentTaskListToolOutput: Sendable, Codable, Hashable {
     }
 }
 
-public struct CreateAgentTaskTool: TypedInstanceAgentTool {
+public struct CreateAgentTaskTool: AgentTool {
     public typealias Input = CreateAgentTaskToolInput
+    public typealias Output = AgentTaskToolOutput
 
     public static let identifier: AgentToolIdentifier = "task_create"
     public static let description = "Create a durable Agentic task."
@@ -178,19 +179,15 @@ public struct CreateAgentTaskTool: TypedInstanceAgentTool {
     }
 
     public func preflight(
-        input: JSONValue,
-        workspace: AgentWorkspace?
+        _ input: Input,
+        context: AgentToolExecutionContext
     ) async throws -> ToolPreflight {
-        let decoded = try JSONToolBridge.decode(
-            CreateAgentTaskToolInput.self,
-            from: input
-        )
 
         return .init(
             toolName: name,
             risk: risk,
-            workspaceRoot: workspace?.rootURL.path,
-            summary: "Create durable task: \(decoded.subject)",
+            workspaceRoot: context.workspace?.rootURL.path,
+            summary: "Create durable task: \(input.subject)",
             estimatedWriteCount: 1,
             sideEffects: [
                 "writes task file"
@@ -199,35 +196,28 @@ public struct CreateAgentTaskTool: TypedInstanceAgentTool {
     }
 
     public func call(
-        input: JSONValue,
-        workspace: AgentWorkspace?
-    ) async throws -> JSONValue {
-        _ = workspace
-
-        let decoded = try JSONToolBridge.decode(
-            CreateAgentTaskToolInput.self,
-            from: input
-        )
+        _ input: Input,
+        context: AgentToolExecutionContext
+    ) async throws -> Output {
 
         let task = try await manager.create(
-            subject: decoded.subject,
-            description: decoded.description,
-            blockedBy: decoded.blockedBy,
-            owner: decoded.owner,
-            sessionID: decoded.sessionID,
-            metadata: decoded.metadata
+            subject: input.subject,
+            description: input.description,
+            blockedBy: input.blockedBy,
+            owner: input.owner,
+            sessionID: input.sessionID,
+            metadata: input.metadata
         )
 
-        return try JSONToolBridge.encode(
-            AgentTaskToolOutput(
+        return AgentTaskToolOutput(
                 task: task
             )
-        )
     }
 }
 
-public struct UpdateAgentTaskTool: TypedInstanceAgentTool {
+public struct UpdateAgentTaskTool: AgentTool {
     public typealias Input = UpdateAgentTaskToolInput
+    public typealias Output = AgentTaskToolOutput
 
     public static let identifier: AgentToolIdentifier = "task_update"
     public static let description = "Update a durable Agentic task."
@@ -254,20 +244,16 @@ public struct UpdateAgentTaskTool: TypedInstanceAgentTool {
     }
 
     public func preflight(
-        input: JSONValue,
-        workspace: AgentWorkspace?
+        _ input: Input,
+        context: AgentToolExecutionContext
     ) async throws -> ToolPreflight {
-        let decoded = try JSONToolBridge.decode(
-            UpdateAgentTaskToolInput.self,
-            from: input
-        )
 
         return .init(
             toolName: name,
             risk: risk,
-            workspaceRoot: workspace?.rootURL.path,
-            summary: "Update durable task \(decoded.id.rawValue).",
-            estimatedWriteCount: decoded.status == .completed ? 2 : 1,
+            workspaceRoot: context.workspace?.rootURL.path,
+            summary: "Update durable task \(input.id.rawValue).",
+            estimatedWriteCount: input.status == .completed ? 2 : 1,
             sideEffects: [
                 "writes task file",
                 "may clear dependency from blocked tasks"
@@ -276,38 +262,31 @@ public struct UpdateAgentTaskTool: TypedInstanceAgentTool {
     }
 
     public func call(
-        input: JSONValue,
-        workspace: AgentWorkspace?
-    ) async throws -> JSONValue {
-        _ = workspace
-
-        let decoded = try JSONToolBridge.decode(
-            UpdateAgentTaskToolInput.self,
-            from: input
-        )
+        _ input: Input,
+        context: AgentToolExecutionContext
+    ) async throws -> Output {
 
         let task = try await manager.update(
-            id: decoded.id,
-            subject: decoded.subject,
-            description: decoded.description,
-            status: decoded.status,
-            owner: decoded.owner,
-            addBlockedBy: decoded.addBlockedBy,
-            removeBlockedBy: decoded.removeBlockedBy,
-            sessionID: decoded.sessionID,
-            metadataPatch: decoded.metadataPatch
+            id: input.id,
+            subject: input.subject,
+            description: input.description,
+            status: input.status,
+            owner: input.owner,
+            addBlockedBy: input.addBlockedBy,
+            removeBlockedBy: input.removeBlockedBy,
+            sessionID: input.sessionID,
+            metadataPatch: input.metadataPatch
         )
 
-        return try JSONToolBridge.encode(
-            AgentTaskToolOutput(
+        return AgentTaskToolOutput(
                 task: task
             )
-        )
     }
 }
 
-public struct ListAgentTasksTool: TypedInstanceAgentTool {
+public struct ListAgentTasksTool: AgentTool {
     public typealias Input = ListAgentTasksToolInput
+    public typealias Output = AgentTaskListToolOutput
 
     public static let identifier: AgentToolIdentifier = "task_list"
     public static let description = "List durable Agentic tasks."
@@ -334,46 +313,39 @@ public struct ListAgentTasksTool: TypedInstanceAgentTool {
     }
 
     public func preflight(
-        input _: JSONValue,
-        workspace: AgentWorkspace?
+        _ input: Input,
+        context: AgentToolExecutionContext
     ) async throws -> ToolPreflight {
         .init(
             toolName: name,
             risk: risk,
-            workspaceRoot: workspace?.rootURL.path,
+            workspaceRoot: context.workspace?.rootURL.path,
             summary: "List durable tasks.",
             sideEffects: []
         )
     }
 
     public func call(
-        input: JSONValue,
-        workspace: AgentWorkspace?
-    ) async throws -> JSONValue {
-        _ = workspace
-
-        let decoded = try JSONToolBridge.decode(
-            ListAgentTasksToolInput.self,
-            from: input
-        )
+        _ input: Input,
+        context: AgentToolExecutionContext
+    ) async throws -> Output {
 
         let tasks = try await manager.list(
-            statuses: decoded.statuses,
-            owner: decoded.owner,
-            readyOnly: decoded.readyOnly,
-            includeCompleted: decoded.includeCompleted
+            statuses: input.statuses,
+            owner: input.owner,
+            readyOnly: input.readyOnly,
+            includeCompleted: input.includeCompleted
         )
 
-        return try JSONToolBridge.encode(
-            AgentTaskListToolOutput(
+        return AgentTaskListToolOutput(
                 tasks: tasks
             )
-        )
     }
 }
 
-public struct GetAgentTaskTool: TypedInstanceAgentTool {
+public struct GetAgentTaskTool: AgentTool {
     public typealias Input = GetAgentTaskToolInput
+    public typealias Output = AgentTaskToolOutput
 
     public static let identifier: AgentToolIdentifier = "task_get"
     public static let description = "Read a durable Agentic task."
@@ -400,48 +372,37 @@ public struct GetAgentTaskTool: TypedInstanceAgentTool {
     }
 
     public func preflight(
-        input: JSONValue,
-        workspace: AgentWorkspace?
+        _ input: Input,
+        context: AgentToolExecutionContext
     ) async throws -> ToolPreflight {
-        let decoded = try JSONToolBridge.decode(
-            GetAgentTaskToolInput.self,
-            from: input
-        )
 
         return .init(
             toolName: name,
             risk: risk,
-            workspaceRoot: workspace?.rootURL.path,
-            summary: "Read durable task \(decoded.id.rawValue).",
+            workspaceRoot: context.workspace?.rootURL.path,
+            summary: "Read durable task \(input.id.rawValue).",
             sideEffects: []
         )
     }
 
     public func call(
-        input: JSONValue,
-        workspace: AgentWorkspace?
-    ) async throws -> JSONValue {
-        _ = workspace
-
-        let decoded = try JSONToolBridge.decode(
-            GetAgentTaskToolInput.self,
-            from: input
-        )
+        _ input: Input,
+        context: AgentToolExecutionContext
+    ) async throws -> Output {
 
         let task = try await manager.get(
-            decoded.id
+            input.id
         )
 
-        return try JSONToolBridge.encode(
-            AgentTaskToolOutput(
+        return AgentTaskToolOutput(
                 task: task
             )
-        )
     }
 }
 
-public struct ClaimAgentTaskTool: TypedInstanceAgentTool {
+public struct ClaimAgentTaskTool: AgentTool {
     public typealias Input = ClaimAgentTaskToolInput
+    public typealias Output = AgentTaskToolOutput
 
     public static let identifier: AgentToolIdentifier = "task_claim"
     public static let description = "Claim a durable Agentic task for an owner."
@@ -468,19 +429,15 @@ public struct ClaimAgentTaskTool: TypedInstanceAgentTool {
     }
 
     public func preflight(
-        input: JSONValue,
-        workspace: AgentWorkspace?
+        _ input: Input,
+        context: AgentToolExecutionContext
     ) async throws -> ToolPreflight {
-        let decoded = try JSONToolBridge.decode(
-            ClaimAgentTaskToolInput.self,
-            from: input
-        )
 
         return .init(
             toolName: name,
             risk: risk,
-            workspaceRoot: workspace?.rootURL.path,
-            summary: "Claim task \(decoded.id.rawValue) for \(decoded.owner).",
+            workspaceRoot: context.workspace?.rootURL.path,
+            summary: "Claim task \(input.id.rawValue) for \(input.owner).",
             estimatedWriteCount: 1,
             sideEffects: [
                 "writes task file"
@@ -489,31 +446,24 @@ public struct ClaimAgentTaskTool: TypedInstanceAgentTool {
     }
 
     public func call(
-        input: JSONValue,
-        workspace: AgentWorkspace?
-    ) async throws -> JSONValue {
-        _ = workspace
-
-        let decoded = try JSONToolBridge.decode(
-            ClaimAgentTaskToolInput.self,
-            from: input
-        )
+        _ input: Input,
+        context: AgentToolExecutionContext
+    ) async throws -> Output {
 
         let task = try await manager.claim(
-            id: decoded.id,
-            owner: decoded.owner
+            id: input.id,
+            owner: input.owner
         )
 
-        return try JSONToolBridge.encode(
-            AgentTaskToolOutput(
+        return AgentTaskToolOutput(
                 task: task
             )
-        )
     }
 }
 
-public struct CompleteAgentTaskTool: TypedInstanceAgentTool {
+public struct CompleteAgentTaskTool: AgentTool {
     public typealias Input = CompleteAgentTaskToolInput
+    public typealias Output = AgentTaskToolOutput
 
     public static let identifier: AgentToolIdentifier = "task_complete"
     public static let description = "Complete a durable Agentic task and unblock dependents."
@@ -540,19 +490,15 @@ public struct CompleteAgentTaskTool: TypedInstanceAgentTool {
     }
 
     public func preflight(
-        input: JSONValue,
-        workspace: AgentWorkspace?
+        _ input: Input,
+        context: AgentToolExecutionContext
     ) async throws -> ToolPreflight {
-        let decoded = try JSONToolBridge.decode(
-            CompleteAgentTaskToolInput.self,
-            from: input
-        )
 
         return .init(
             toolName: name,
             risk: risk,
-            workspaceRoot: workspace?.rootURL.path,
-            summary: "Complete task \(decoded.id.rawValue) and clear dependency edges.",
+            workspaceRoot: context.workspace?.rootURL.path,
+            summary: "Complete task \(input.id.rawValue) and clear dependency edges.",
             estimatedWriteCount: 2,
             sideEffects: [
                 "writes task file",
@@ -562,24 +508,16 @@ public struct CompleteAgentTaskTool: TypedInstanceAgentTool {
     }
 
     public func call(
-        input: JSONValue,
-        workspace: AgentWorkspace?
-    ) async throws -> JSONValue {
-        _ = workspace
-
-        let decoded = try JSONToolBridge.decode(
-            CompleteAgentTaskToolInput.self,
-            from: input
-        )
+        _ input: Input,
+        context: AgentToolExecutionContext
+    ) async throws -> Output {
 
         let task = try await manager.complete(
-            id: decoded.id
+            id: input.id
         )
 
-        return try JSONToolBridge.encode(
-            AgentTaskToolOutput(
+        return AgentTaskToolOutput(
                 task: task
             )
-        )
     }
 }

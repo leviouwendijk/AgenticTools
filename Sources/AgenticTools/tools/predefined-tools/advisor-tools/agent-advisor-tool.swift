@@ -4,8 +4,9 @@ import AgenticWorkspace
 import Foundation
 import Primitives
 
-public struct AgentAdvisorTool: TypedInstanceAgentTool {
+public struct AgentAdvisorTool: AgentTool {
     public typealias Input = AgentAdvisorToolInput
+    public typealias Output = AgentAdvisorToolOutput
 
     public static let identifier = AgentAdvisorToolDefaults.identifier
 
@@ -33,13 +34,13 @@ public struct AgentAdvisorTool: TypedInstanceAgentTool {
     }
 
     public func preflight(
-        input _: JSONValue,
-        workspace: AgentWorkspace?
+        _ input: Input,
+        context: AgentToolExecutionContext
     ) async throws -> ToolPreflight {
         ToolPreflight(
             toolName: name,
             risk: risk,
-            workspaceRoot: workspace?.rootURL.path,
+            workspaceRoot: context.workspace?.rootURL.path,
             summary: """
             Ask an advisor model using route purpose '\(configuration.routePolicy.purpose.rawValue)'.
 
@@ -54,25 +55,9 @@ public struct AgentAdvisorTool: TypedInstanceAgentTool {
     }
 
     public func call(
-        input: JSONValue,
-        workspace: AgentWorkspace?
-    ) async throws -> JSONValue {
-        try await call(
-            input: input,
-            context: .init(
-                workspace: workspace
-            )
-        )
-    }
-
-    public func call(
-        input: JSONValue,
+        _ input: Input,
         context: AgentToolExecutionContext
-    ) async throws -> JSONValue {
-        let input = try JSONToolBridge.decode(
-            AgentAdvisorToolInput.self,
-            from: input
-        )
+    ) async throws -> Output {
 
         let prompt = try Self.normalizedPrompt(
             input.prompt
@@ -125,9 +110,7 @@ public struct AgentAdvisorTool: TypedInstanceAgentTool {
             advice: response.message.content.text
         )
 
-        return try JSONToolBridge.encode(
-            output
-        )
+        return output
     }
 }
 

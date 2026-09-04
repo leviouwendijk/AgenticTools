@@ -5,10 +5,9 @@ import Foundation
 import Primitives
 import Search
 
-public struct FindToolsTool:
-    TypedInstanceAgentTool
-{
+public struct FindToolsTool: AgentTool {
     public typealias Input = FindToolsToolInput
+    public typealias Output = FindToolsToolOutput
 
     public static let identifier: AgentToolIdentifier = "find_tools"
     public static let description = "Search the installed Agentic tool catalog by exact identifier or natural-language capability. Returned matches are exposed as native tools on subsequent model turns."
@@ -38,22 +37,18 @@ public struct FindToolsTool:
     }
 
     public func preflight(
-        input: JSONValue,
-        workspace: AgentWorkspace?
+        _ input: Input,
+        context: AgentToolExecutionContext
     ) async throws -> ToolPreflight {
-        let decoded = try JSONToolBridge.decode(
-            FindToolsToolInput.self,
-            from: input
-        )
         let query = try normalizedQuery(
-            decoded.query
+            input.query
         )
 
         return ToolPreflight(
             toolName: name,
             risk: risk,
-            workspaceRoot: workspace?.rootURL.path,
-            summary: "Find and activate up to \(decoded.resultLimit) installed tool(s) matching '\(query)'.",
+            workspaceRoot: context.workspace?.rootURL.path,
+            summary: "Find and activate up to \(input.resultLimit) installed tool(s) matching '\(query)'.",
             sideEffects: [
                 "updates model-visible tool exposure for subsequent turns",
             ]
@@ -61,15 +56,11 @@ public struct FindToolsTool:
     }
 
     public func call(
-        input: JSONValue,
-        workspace _: AgentWorkspace?
-    ) async throws -> JSONValue {
-        let decoded = try JSONToolBridge.decode(
-            FindToolsToolInput.self,
-            from: input
-        )
+        _ input: Input,
+        context _: AgentToolExecutionContext
+    ) async throws -> Output {
         let query = try normalizedQuery(
-            decoded.query
+            input.query
         )
         let definitions = registry
             .modelFacingDefinitions
@@ -96,7 +87,7 @@ public struct FindToolsTool:
 
         for definition in ranked
         where definition.identifier != exact?.identifier {
-            guard selected.count < decoded.resultLimit else {
+            guard selected.count < input.resultLimit else {
                 break
             }
 
@@ -105,10 +96,10 @@ public struct FindToolsTool:
             )
         }
 
-        if selected.count > decoded.resultLimit {
+        if selected.count > input.resultLimit {
             selected = Array(
                 selected.prefix(
-                    decoded.resultLimit
+                    input.resultLimit
                 )
             )
         }
@@ -126,12 +117,10 @@ public struct FindToolsTool:
             in: registry
         )
 
-        return try JSONToolBridge.encode(
-            FindToolsToolOutput(
-                query: query,
-                tools: tools,
-                activated: activated
-            )
+        return FindToolsToolOutput(
+            query: query,
+            tools: tools,
+            activated: activated
         )
     }
 }

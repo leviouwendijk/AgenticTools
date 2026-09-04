@@ -5,19 +5,18 @@ import AgenticWorkspace
 import Primitives
 import TestFlows
 
-private struct FindToolsProbeTool:
-    TypedInstanceAgentTool
-{
+private struct FindToolsProbeTool: AgentTool {
     typealias Input = FindToolsToolInput
+    typealias Output = FindToolsToolInput
 
     let identifier: AgentToolIdentifier
     let description: String
     let risk: ActionRisk
 
     func call(
-        input: JSONValue,
-        workspace _: AgentWorkspace?
-    ) async throws -> JSONValue {
+        _ input: Input,
+        context _: AgentToolExecutionContext
+    ) async throws -> Output {
         input
     }
 }
@@ -26,20 +25,18 @@ enum AgenticToolsFlowTesting {
     static func runFindToolsDiscoveryActivation() async throws -> [TestFlowDiagnostic] {
         var catalog = ToolRegistry()
 
-        try catalog.register(
-            [
-                FindToolsProbeTool(
-                    identifier: "read_file",
-                    description: "Read a bounded source file from the current workspace.",
-                    risk: .observe
-                ),
-                FindToolsProbeTool(
-                    identifier: "git_push",
-                    description: "Push committed Git history to a configured remote repository.",
-                    risk: .privileged
-                ),
-            ] as [any AgentTool]
-        )
+        try catalog.register {
+            FindToolsProbeTool(
+                identifier: "read_file",
+                description: "Read a bounded source file from the current workspace.",
+                risk: .observe
+            )
+            FindToolsProbeTool(
+                identifier: "git_push",
+                description: "Push committed Git history to a configured remote repository.",
+                risk: .privileged
+            )
+        }
 
         let exposure = AgentToolExposure(
             policy: .discoverable(
@@ -73,18 +70,11 @@ enum AgenticToolsFlowTesting {
             "discoverable runtime begins with only find_tools exposed"
         )
 
-        let greetingOutputValue = try await findTools.call(
-            input: try JSONToolBridge.encode(
-                FindToolsToolInput(
-                    query: "hi"
-                )
+        let greetingOutput = try await findTools.call(
+            FindToolsToolInput(
+                query: "hi"
             ),
-            workspace: nil
-        )
-
-        let greetingOutput = try JSONToolBridge.decode(
-            FindToolsToolOutput.self,
-            from: greetingOutputValue
+            context: .init()
         )
 
         try Expect.equal(
@@ -113,18 +103,11 @@ enum AgenticToolsFlowTesting {
             "low-signal discovery leaves exposure unchanged"
         )
 
-        let unrelatedOutputValue = try await findTools.call(
-            input: try JSONToolBridge.encode(
-                FindToolsToolInput(
-                    query: "qzxwvv"
-                )
+        let unrelatedOutput = try await findTools.call(
+            FindToolsToolInput(
+                query: "qzxwvv"
             ),
-            workspace: nil
-        )
-
-        let unrelatedOutput = try JSONToolBridge.decode(
-            FindToolsToolOutput.self,
-            from: unrelatedOutputValue
+            context: .init()
         )
 
         try Expect.equal(
@@ -139,19 +122,12 @@ enum AgenticToolsFlowTesting {
             "unrelated capability query activates no tools"
         )
 
-        let outputValue = try await findTools.call(
-            input: try JSONToolBridge.encode(
-                FindToolsToolInput(
-                    query: "read a source file",
-                    maximumResults: 1
-                )
+        let output = try await findTools.call(
+            FindToolsToolInput(
+                query: "read a source file",
+                maximumResults: 1
             ),
-            workspace: nil
-        )
-
-        let output = try JSONToolBridge.decode(
-            FindToolsToolOutput.self,
-            from: outputValue
+            context: .init()
         )
 
         try Expect.equal(
@@ -215,7 +191,7 @@ enum AgenticToolsFlowTesting {
         )
 
         try Expect.equal(
-            runtimeRegistry.tool(
+            runtimeRegistry.registeredTool(
                 named: "git_push"
             ) != nil,
             true,

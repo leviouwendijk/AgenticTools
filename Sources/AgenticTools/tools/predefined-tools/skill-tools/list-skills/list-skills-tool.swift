@@ -3,8 +3,9 @@ import AgenticExecution
 import AgenticWorkspace
 import Primitives
 
-public struct ListSkillsTool: TypedInstanceAgentTool {
+public struct ListSkillsTool: AgentTool {
     public typealias Input = ListSkillsToolInput
+    public typealias Output = ListSkillsToolOutput
 
     public static let identifier: AgentToolIdentifier = "list_skills"
     public static let description = "List available skills and their summaries."
@@ -31,15 +32,11 @@ public struct ListSkillsTool: TypedInstanceAgentTool {
     }
 
     public func preflight(
-        input: JSONValue,
-        workspace: AgentWorkspace?
+        _ input: Input,
+        context: AgentToolExecutionContext
     ) async throws -> ToolPreflight {
-        let decoded = try JSONToolBridge.decode(
-            ListSkillsToolInput.self,
-            from: input
-        )
 
-        let query = decoded.query?.trimmingCharacters(
+        let query = input.query?.trimmingCharacters(
             in: .whitespacesAndNewlines
         )
 
@@ -53,23 +50,19 @@ public struct ListSkillsTool: TypedInstanceAgentTool {
         return .init(
             toolName: name,
             risk: risk,
-            workspaceRoot: workspace?.rootURL.path,
+            workspaceRoot: context.workspace?.rootURL.path,
             summary: summary,
             sideEffects: risk.defaultSideEffects
         )
     }
 
     public func call(
-        input: JSONValue,
-        workspace _: AgentWorkspace?
-    ) async throws -> JSONValue {
-        let decoded = try JSONToolBridge.decode(
-            ListSkillsToolInput.self,
-            from: input
-        )
+        _ input: Input,
+        context _: AgentToolExecutionContext
+    ) async throws -> Output {
 
-        let includeBody = decoded.includeBody ?? false
-        let query = decoded.query?.trimmingCharacters(
+        let includeBody = input.includeBody ?? false
+        let query = input.query?.trimmingCharacters(
             in: .whitespacesAndNewlines
         )
 
@@ -97,8 +90,7 @@ public struct ListSkillsTool: TypedInstanceAgentTool {
             )
         }
 
-        return try JSONToolBridge.encode(
-            ListSkillsToolOutput(
+        return ListSkillsToolOutput(
                 skills: skills,
                 count: skills.count,
                 catalog: selected
@@ -107,6 +99,5 @@ public struct ListSkillsTool: TypedInstanceAgentTool {
                     }
                     .joined(separator: "\n")
             )
-        )
     }
 }

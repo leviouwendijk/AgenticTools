@@ -3,8 +3,9 @@ import AgenticExecution
 import AgenticWorkspace
 import Primitives
 
-public struct ReadTranscriptEventsTool: TypedInstanceAgentTool {
+public struct ReadTranscriptEventsTool: AgentTool {
     public typealias Input = ReadTranscriptEventsToolInput
+    public typealias Output = ReadTranscriptEventsToolOutput
 
     public static let identifier: AgentToolIdentifier = "read_transcript_events"
     public static let description = "Read selected transcript events from an attached transcript store."
@@ -31,50 +32,38 @@ public struct ReadTranscriptEventsTool: TypedInstanceAgentTool {
     }
 
     public func preflight(
-        input: JSONValue,
-        workspace: AgentWorkspace?
+        _ input: Input,
+        context: AgentToolExecutionContext
     ) async throws -> ToolPreflight {
-        _ = workspace
-
-        let decoded = try JSONToolBridge.decode(
-            ReadTranscriptEventsToolInput.self,
-            from: input
-        )
 
         return .init(
             toolName: name,
             risk: risk,
             summary: summary(
-                for: decoded
+                for: input
             ),
             sideEffects: []
         )
     }
 
     public func call(
-        input: JSONValue,
-        workspace: AgentWorkspace?
-    ) async throws -> JSONValue {
-        _ = workspace
-
-        let decoded = try JSONToolBridge.decode(
-            ReadTranscriptEventsToolInput.self,
-            from: input
-        )
+        _ input: Input,
+        context: AgentToolExecutionContext
+    ) async throws -> Output {
         let events = try await store.loadEvents()
 
         let selected: [(index: Int, event: AgentTranscriptEvent)]
-        if decoded.eventIDs.isEmpty {
+        if input.eventIDs.isEmpty {
             selected = TranscriptToolSupport.selectedEvents(
                 from: events,
-                startIndex: decoded.startIndex,
-                limit: decoded.limit,
-                allowedKinds: decoded.kinds,
-                latestFirst: decoded.latestFirst
+                startIndex: input.startIndex,
+                limit: input.limit,
+                allowedKinds: input.kinds,
+                latestFirst: input.latestFirst
             )
         } else {
             let requestedIDs = Set(
-                decoded.eventIDs
+                input.eventIDs
             )
 
             selected = events.enumerated().compactMap { index, event in
@@ -84,7 +73,7 @@ public struct ReadTranscriptEventsTool: TypedInstanceAgentTool {
 
                 guard TranscriptToolSupport.matchesKinds(
                     event,
-                    allowedKinds: decoded.kinds
+                    allowedKinds: input.kinds
                 ) else {
                     return nil
                 }
@@ -100,17 +89,15 @@ public struct ReadTranscriptEventsTool: TypedInstanceAgentTool {
             TranscriptToolSupport.record(
                 for: indexedEvent.event,
                 index: indexedEvent.index,
-                includeFullText: decoded.includeFullText
+                includeFullText: input.includeFullText
             )
         }
 
-        return try JSONToolBridge.encode(
-            ReadTranscriptEventsToolOutput(
+        return ReadTranscriptEventsToolOutput(
                 totalEventCount: events.count,
                 returnedEventCount: records.count,
                 events: records
             )
-        )
     }
 }
 

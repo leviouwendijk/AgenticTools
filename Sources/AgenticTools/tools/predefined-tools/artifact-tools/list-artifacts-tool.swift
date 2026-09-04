@@ -52,8 +52,9 @@ public struct ListArtifactsToolOutput: Sendable, Codable, Hashable {
     }
 }
 
-public struct ListArtifactsTool: TypedInstanceAgentTool {
+public struct ListArtifactsTool: AgentTool {
     public typealias Input = ListArtifactsToolInput
+    public typealias Output = ListArtifactsToolOutput
 
     public static let identifier: AgentToolIdentifier = "list_artifacts"
     public static let description = "List durable artifacts emitted for the current Agentic session."
@@ -80,47 +81,35 @@ public struct ListArtifactsTool: TypedInstanceAgentTool {
     }
 
     public func preflight(
-        input: JSONValue,
-        workspace: AgentWorkspace?
+        _ input: Input,
+        context: AgentToolExecutionContext
     ) async throws -> ToolPreflight {
-        let decoded = try JSONToolBridge.decode(
-            ListArtifactsToolInput.self,
-            from: input
-        )
 
         return .init(
             toolName: name,
             risk: risk,
-            workspaceRoot: workspace?.rootURL.path,
+            workspaceRoot: context.workspace?.rootURL.path,
             summary: summary(
-                for: decoded
+                for: input
             ),
             sideEffects: []
         )
     }
 
     public func call(
-        input: JSONValue,
-        workspace: AgentWorkspace?
-    ) async throws -> JSONValue {
-        _ = workspace
-
-        let decoded = try JSONToolBridge.decode(
-            ListArtifactsToolInput.self,
-            from: input
-        )
+        _ input: Input,
+        context: AgentToolExecutionContext
+    ) async throws -> Output {
 
         let artifacts = try await store.list(
-            kinds: decoded.kinds,
-            latestFirst: decoded.resolvedLatestFirst,
-            limit: decoded.resolvedLimit
+            kinds: input.kinds,
+            latestFirst: input.resolvedLatestFirst,
+            limit: input.resolvedLimit
         )
 
-        return try JSONToolBridge.encode(
-            ListArtifactsToolOutput(
+        return ListArtifactsToolOutput(
                 artifacts: artifacts
             )
-        )
     }
 }
 

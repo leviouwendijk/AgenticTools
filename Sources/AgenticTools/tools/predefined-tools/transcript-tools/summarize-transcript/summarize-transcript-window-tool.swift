@@ -3,8 +3,9 @@ import AgenticExecution
 import AgenticWorkspace
 import Primitives
 
-public struct SummarizeTranscriptWindowTool: TypedInstanceAgentTool {
+public struct SummarizeTranscriptWindowTool: AgentTool {
     public typealias Input = SummarizeTranscriptWindowToolInput
+    public typealias Output = SummarizeTranscriptWindowToolOutput
 
     public static let identifier: AgentToolIdentifier = "summarize_transcript_window"
     public static let description = "Create a deterministic summary of a transcript event window."
@@ -31,56 +32,42 @@ public struct SummarizeTranscriptWindowTool: TypedInstanceAgentTool {
     }
 
     public func preflight(
-        input: JSONValue,
-        workspace: AgentWorkspace?
+        _ input: Input,
+        context: AgentToolExecutionContext
     ) async throws -> ToolPreflight {
-        _ = workspace
-
-        let decoded = try JSONToolBridge.decode(
-            SummarizeTranscriptWindowToolInput.self,
-            from: input
-        )
 
         return .init(
             toolName: name,
             risk: risk,
             summary: summary(
-                for: decoded
+                for: input
             ),
             sideEffects: []
         )
     }
 
     public func call(
-        input: JSONValue,
-        workspace: AgentWorkspace?
-    ) async throws -> JSONValue {
-        _ = workspace
-
-        let decoded = try JSONToolBridge.decode(
-            SummarizeTranscriptWindowToolInput.self,
-            from: input
-        )
+        _ input: Input,
+        context: AgentToolExecutionContext
+    ) async throws -> Output {
         let events = try await store.loadEvents()
         let selected = TranscriptToolSupport.selectedEvents(
             from: events,
-            startIndex: decoded.startIndex,
-            limit: decoded.limit,
-            allowedKinds: decoded.kinds,
-            latestFirst: decoded.latestFirst
+            startIndex: input.startIndex,
+            limit: input.limit,
+            allowedKinds: input.kinds,
+            latestFirst: input.latestFirst
         )
 
         let window = TranscriptToolSupport.summarize(
             events: selected,
             totalEventCount: events.count,
-            maxExcerptCharacters: decoded.clampedMaxExcerptCharacters
+            maxExcerptCharacters: input.clampedMaxExcerptCharacters
         )
 
-        return try JSONToolBridge.encode(
-            SummarizeTranscriptWindowToolOutput(
+        return SummarizeTranscriptWindowToolOutput(
                 window: window
             )
-        )
     }
 }
 

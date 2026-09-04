@@ -3,8 +3,9 @@ import AgenticExecution
 import AgenticWorkspace
 import Primitives
 
-public struct SearchTranscriptTool: TypedInstanceAgentTool {
+public struct SearchTranscriptTool: AgentTool {
     public typealias Input = SearchTranscriptToolInput
+    public typealias Output = SearchTranscriptToolOutput
 
     public static let identifier: AgentToolIdentifier = "search_transcript"
     public static let description = "Search transcript events in an attached transcript store."
@@ -31,56 +32,44 @@ public struct SearchTranscriptTool: TypedInstanceAgentTool {
     }
 
     public func preflight(
-        input: JSONValue,
-        workspace: AgentWorkspace?
+        _ input: Input,
+        context: AgentToolExecutionContext
     ) async throws -> ToolPreflight {
-        _ = workspace
-
-        let decoded = try JSONToolBridge.decode(
-            SearchTranscriptToolInput.self,
-            from: input
-        )
 
         return .init(
             toolName: name,
             risk: risk,
-            summary: "Search transcript for '\(decoded.query)'",
+            summary: "Search transcript for '\(input.query)'",
             sideEffects: []
         )
     }
 
     public func call(
-        input: JSONValue,
-        workspace: AgentWorkspace?
-    ) async throws -> JSONValue {
-        _ = workspace
-
-        let decoded = try JSONToolBridge.decode(
-            SearchTranscriptToolInput.self,
-            from: input
-        )
+        _ input: Input,
+        context: AgentToolExecutionContext
+    ) async throws -> Output {
         let events = try await store.loadEvents()
 
         let matches = events.enumerated().compactMap { index, event -> SearchTranscriptMatch? in
             guard TranscriptToolSupport.matchesKinds(
                 event,
-                allowedKinds: decoded.kinds
+                allowedKinds: input.kinds
             ) else {
                 return nil
             }
 
             guard TranscriptToolSupport.containsQuery(
                 event,
-                query: decoded.query,
-                caseSensitive: decoded.caseSensitive
+                query: input.query,
+                caseSensitive: input.caseSensitive
             ) else {
                 return nil
             }
 
             let score = TranscriptToolSupport.score(
                 event,
-                query: decoded.query,
-                caseSensitive: decoded.caseSensitive
+                query: input.query,
+                caseSensitive: input.caseSensitive
             )
 
             return .init(
@@ -88,7 +77,7 @@ public struct SearchTranscriptTool: TypedInstanceAgentTool {
                 event: TranscriptToolSupport.record(
                     for: event,
                     index: index,
-                    includeFullText: decoded.includeFullText
+                    includeFullText: input.includeFullText
                 )
             )
         }
@@ -102,17 +91,15 @@ public struct SearchTranscriptTool: TypedInstanceAgentTool {
 
         let limitedMatches = Array(
             matches.prefix(
-                decoded.clampedMaxResults
+                input.clampedMaxResults
             )
         )
 
-        return try JSONToolBridge.encode(
-            SearchTranscriptToolOutput(
-                query: decoded.query,
+        return SearchTranscriptToolOutput(
+                query: input.query,
                 totalEventCount: events.count,
                 matchCount: limitedMatches.count,
                 matches: limitedMatches
             )
-        )
     }
 }

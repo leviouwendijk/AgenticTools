@@ -13,15 +13,13 @@ public struct SkillToolSet: AgentToolSet {
     public func register(
         into registry: inout ToolRegistry
     ) throws {
-        try registry.register(
-            [
-                ListSkillsTool(
-                    registry: self.registry
-                ),
-                LoadSkillTool(
-                    registry: self.registry
-                )
-            ]
-        )
+        try registry.register {
+            ListSkillsTool(
+                registry: self.registry
+            )
+            LoadSkillTool(
+                registry: self.registry
+            )
+        }
     }
 }

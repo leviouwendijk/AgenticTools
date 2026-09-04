@@ -13,19 +13,16 @@ public struct CoreArtifactToolSet: AgentToolSet {
     public func register(
         into registry: inout ToolRegistry
     ) throws {
-        try registry.register(
-            [
-                EmitArtifactTool(
-                    store: store
-                ),
-                ListArtifactsTool(
-                    store: store
-                ),
-                ReadArtifactTool(
-                    store: store
-                )
-            ]
-        )
+        try registry.register {
+            EmitArtifactTool(
+                store: store
+            )
+            ListArtifactsTool(
+                store: store
+            )
+            ReadArtifactTool(
+                store: store
+            )
+        }
     }
 }
-

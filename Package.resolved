@@ -7,7 +7,7 @@
       "location" : "https://github.com/leviouwendijk/Agentic.git",
       "state" : {
         "branch" : "master",
-        "revision" : "d64309448523eae37b63de4fc5120154410dd026"
+        "revision" : "05992e285cd10e0304ce38d39ebd2bf9a7d482cb"
       }
     },
     {
@@ -16,7 +16,7 @@
       "location" : "https://github.com/leviouwendijk/AgenticExecution.git",
       "state" : {
         "branch" : "master",
-        "revision" : "9709a1a7d49cc2e8da98f6ab8de96b9aa100aeff"
+        "revision" : "caa0ea64c8903a49f1bffc0770a1d2e10ad8ebc9"
       }
     },
     {
@@ -25,7 +25,7 @@
       "location" : "https://github.com/leviouwendijk/AgenticWorkspace.git",
       "state" : {
         "branch" : "master",
-        "revision" : "49fa47b13403ae7e9eb1653ac5e730f17c2ca1b3"
+        "revision" : "3e2242b2ac008e47b7e60f7771b27c60a3ec23e6"
       }
     },
     {
@@ -142,7 +142,7 @@
       "location" : "https://github.com/leviouwendijk/Primitives.git",
       "state" : {
         "branch" : "master",
-        "revision" : "7b53326bba4229c0b8c62529dfe0934f6ddedf6c"
+        "revision" : "3b9e65785ecb8aa493c55893f61619b6967ce10d"
       }
     },
     {
@@ -232,7 +232,7 @@
       "location" : "https://github.com/leviouwendijk/Terminal.git",
       "state" : {
         "branch" : "master",
-        "revision" : "41284707321c45db19c6aaa811678376da51c266"
+        "revision" : "ef6faf11fdedbc727f22f5a6c5e908caaed32459"
       }
     },
     {

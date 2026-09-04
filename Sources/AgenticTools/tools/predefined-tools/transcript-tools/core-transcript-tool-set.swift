@@ -13,19 +13,16 @@ public struct CoreTranscriptToolSet: AgentToolSet {
     public func register(
         into registry: inout ToolRegistry
     ) throws {
-        try registry.register(
-            [
-                ReadTranscriptEventsTool(
-                    store: store
-                ),
-                SearchTranscriptTool(
-                    store: store
-                ),
-                SummarizeTranscriptWindowTool(
-                    store: store
-                )
-            ]
-        )
+        try registry.register {
+            ReadTranscriptEventsTool(
+                store: store
+            )
+            SearchTranscriptTool(
+                store: store
+            )
+            SummarizeTranscriptWindowTool(
+                store: store
+            )
+        }
     }
 }
-

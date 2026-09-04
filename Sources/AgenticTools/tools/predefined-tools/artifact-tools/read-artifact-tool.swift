@@ -56,8 +56,9 @@ public struct ReadArtifactToolOutput: Sendable, Codable, Hashable {
     }
 }
 
-public struct ReadArtifactTool: TypedInstanceAgentTool {
+public struct ReadArtifactTool: AgentTool {
     public typealias Input = ReadArtifactToolInput
+    public typealias Output = ReadArtifactToolOutput
 
     public static let identifier: AgentToolIdentifier = "read_artifact"
     public static let description = "Read a durable artifact emitted for the current Agentic session."
@@ -84,49 +85,39 @@ public struct ReadArtifactTool: TypedInstanceAgentTool {
     }
 
     public func preflight(
-        input: JSONValue,
-        workspace: AgentWorkspace?
+        _ input: Input,
+        context: AgentToolExecutionContext
     ) async throws -> ToolPreflight {
-        let decoded = try JSONToolBridge.decode(
-            ReadArtifactToolInput.self,
-            from: input
-        )
 
         return .init(
             toolName: name,
             risk: risk,
-            workspaceRoot: workspace?.rootURL.path,
-            summary: "Read session artifact \(decoded.id).",
+            workspaceRoot: context.workspace?.rootURL.path,
+            summary: "Read session artifact \(input.id).",
             sideEffects: []
         )
     }
 
     public func call(
-        input: JSONValue,
-        workspace: AgentWorkspace?
-    ) async throws -> JSONValue {
-        _ = workspace
-
-        let decoded = try JSONToolBridge.decode(
-            ReadArtifactToolInput.self,
-            from: input
-        )
+        _ input: Input,
+        context: AgentToolExecutionContext
+    ) async throws -> Output {
 
         guard let record = try await store.load(
-            id: decoded.id
+            id: input.id
         ) else {
             throw AgentArtifactError.artifactNotFound(
-                decoded.id
+                input.id
             )
         }
 
         let renderedContent: String?
         let truncated: Bool
 
-        if decoded.shouldIncludeContent {
+        if input.shouldIncludeContent {
             let limited = limitedContent(
                 record.content,
-                maxCharacters: decoded.resolvedMaxCharacters
+                maxCharacters: input.resolvedMaxCharacters
             )
 
             renderedContent = limited.content
@@ -136,13 +127,11 @@ public struct ReadArtifactTool: TypedInstanceAgentTool {
             truncated = false
         }
 
-        return try JSONToolBridge.encode(
-            ReadArtifactToolOutput(
+        return ReadArtifactToolOutput(
                 artifact: record.artifact,
                 content: renderedContent,
                 truncated: truncated
             )
-        )
     }
 }
 
