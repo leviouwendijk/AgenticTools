@@ -7,7 +7,7 @@
       "location" : "https://github.com/leviouwendijk/Agentic.git",
       "state" : {
         "branch" : "master",
-        "revision" : "05992e285cd10e0304ce38d39ebd2bf9a7d482cb"
+        "revision" : "8b47dae6140dc551f63a2efb41ecdc8fa30f2abf"
       }
     },
     {
@@ -16,7 +16,7 @@
       "location" : "https://github.com/leviouwendijk/AgenticExecution.git",
       "state" : {
         "branch" : "master",
-        "revision" : "caa0ea64c8903a49f1bffc0770a1d2e10ad8ebc9"
+        "revision" : "c45cf174d59b0c112f5aac824b5084d98250df29"
       }
     },
     {
@@ -52,7 +52,7 @@
       "location" : "https://github.com/leviouwendijk/DSL.git",
       "state" : {
         "branch" : "master",
-        "revision" : "9efff74e61ff3679fce19f3cbf6df09c3bc23691"
+        "revision" : "30ec6798f883b91f697d060bb001e0e4f7a09225"
       }
     },
     {
