@@ -10,14 +10,14 @@ public struct AgentAdvisorTool: AgentTool {
 
     public static let identifier = AgentAdvisorToolDefaults.identifier
 
-    public var provider: any AgentAdvisorModelProviding
+    public var modelInvoker: any AgentModelInvoking
     public var configuration: AgentAdvisorToolConfiguration
 
     public init(
-        provider: any AgentAdvisorModelProviding,
+        modelInvoker: any AgentModelInvoking,
         configuration: AgentAdvisorToolConfiguration = .init()
     ) {
-        self.provider = provider
+        self.modelInvoker = modelInvoker
         self.configuration = configuration
     }
 
@@ -42,14 +42,14 @@ public struct AgentAdvisorTool: AgentTool {
             risk: risk,
             workspaceRoot: context.workspace?.rootURL.path,
             summary: """
-            Ask an advisor model using route purpose '\(configuration.routePolicy.purpose.rawValue)'.
+            Ask an advisor model using route purpose '\(configuration.modelSelection.purpose.rawValue)'.
 
             The advisor call receives bounded text context only.
             No tools are exposed to the advisor model.
             """,
             sideEffects: [
                 "model_call",
-                "route:\(configuration.routePolicy.purpose.rawValue)",
+                "route:\(configuration.modelSelection.purpose.rawValue)",
             ]
         )
     }
@@ -66,7 +66,7 @@ public struct AgentAdvisorTool: AgentTool {
         var metadata = context.metadata
 
         metadata["tool"] = identifier.rawValue
-        metadata["route"] = configuration.routePolicy.purpose.rawValue
+        metadata["route"] = configuration.modelSelection.purpose.rawValue
 
         let request = AgentRequest(
             messages: [
@@ -90,24 +90,23 @@ public struct AgentAdvisorTool: AgentTool {
             metadata: metadata
         )
 
-        let route = try provider.route(
-            request: request,
-            policy: configuration.routePolicy
+        let result = try await modelInvoker.buffered(
+            AgentModelInvocation(
+                request: request,
+                selection: configuration.modelSelection,
+                context: .default,
+                metadata: metadata
+            )
         )
-
-        let response = try await provider.buffered(
-            request: request,
-            policy: configuration.routePolicy
-        )
+        let route = result.route.route
 
         let output = AgentAdvisorToolOutput(
-            routePurpose: route.route.purpose.rawValue,
-            profile: route.route.profile.identifier.rawValue,
-            adapter: route.route.profile.adapterIdentifier.rawValue,
-            model: route.route.profile.model,
-            reasons: route.reasons,
-            warnings: route.warnings,
-            advice: response.message.content.text
+            routePurpose: route.purpose.rawValue,
+            profile: route.profile.identifier.rawValue,
+            adapter: route.profile.adapterIdentifier.rawValue,
+            model: route.profile.model,
+            diagnostics: result.route.diagnostics,
+            advice: result.response.message.content.text
         )
 
         return output

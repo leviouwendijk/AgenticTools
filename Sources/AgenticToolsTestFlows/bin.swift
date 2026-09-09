@@ -16,6 +16,18 @@ enum AgenticToolsFlowSuite:
 
     static let flows: [TestFlow] = [
         TestFlow(
+            "advisor-semantic-model-invocation",
+            tags: [
+                "agentic-tools",
+                "advisor",
+                "model-invocation",
+                "routing",
+            ]
+        ) {
+            try await AgenticToolsFlowTesting
+                .runAdvisorSemanticInvocation()
+        },
+        TestFlow(
             "find-tools-discovery-activation",
             tags: [
                 "agentic-tools",

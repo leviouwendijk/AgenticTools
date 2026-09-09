@@ -25,18 +25,20 @@ enum AgenticToolsFlowTesting {
     static func runFindToolsDiscoveryActivation() async throws -> [TestFlowDiagnostic] {
         var catalog = ToolRegistry()
 
-        try catalog.register {
+        try catalog.register(
             FindToolsProbeTool(
                 identifier: "read_file",
                 description: "Read a bounded source file from the current workspace.",
                 risk: .observe
             )
+        )
+        try catalog.register(
             FindToolsProbeTool(
                 identifier: "git_push",
                 description: "Push committed Git history to a configured remote repository.",
                 risk: .privileged
             )
-        }
+        )
 
         let exposure = AgentToolExposure(
             policy: .discoverable(

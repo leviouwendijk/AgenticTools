@@ -2,25 +2,25 @@ import Agentic
 import AgenticExecution
 
 public struct AgentAdvisorToolSet: AgentToolSet {
-    public var provider: any AgentAdvisorModelProviding
+    public var modelInvoker: any AgentModelInvoking
     public var configuration: AgentAdvisorToolConfiguration
 
     public init(
-        provider: any AgentAdvisorModelProviding,
+        modelInvoker: any AgentModelInvoking,
         configuration: AgentAdvisorToolConfiguration = .init()
     ) {
-        self.provider = provider
+        self.modelInvoker = modelInvoker
         self.configuration = configuration
     }
 
     public func register(
         into registry: inout ToolRegistry
     ) throws {
-        try registry.register {
+        try registry.register(
             AgentAdvisorTool(
-                provider: provider,
+                modelInvoker: modelInvoker,
                 configuration: configuration
             )
-        }
+        )
     }
 }
