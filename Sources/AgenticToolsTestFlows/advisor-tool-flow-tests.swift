@@ -11,7 +11,7 @@ private struct FixtureAdvisorModelInvoker: AgentModelInvoking {
             purpose: invocation.selection.purpose,
             profile: AgentModelProfile(
                 identifier: "fixture.advisor",
-                adapterIdentifier: "fixture.adapter",
+                gatewayIdentifier: "fixture.gateway",
                 model: "fixture-advisor",
                 purposes: [
                     .advisor,
@@ -73,6 +73,11 @@ extension AgenticToolsFlowTesting {
             "advisor tool reports the exact routed profile"
         )
         try Expect.equal(
+            output.gateway,
+            "fixture.gateway",
+            "advisor tool reports the exact routed gateway"
+        )
+        try Expect.equal(
             output.model,
             "fixture-advisor",
             "advisor tool reports the exact routed model"
@@ -113,6 +118,10 @@ extension AgenticToolsFlowTesting {
             .field(
                 "profile",
                 output.profile
+            ),
+            .field(
+                "gateway",
+                output.gateway
             ),
             .field(
                 "model",

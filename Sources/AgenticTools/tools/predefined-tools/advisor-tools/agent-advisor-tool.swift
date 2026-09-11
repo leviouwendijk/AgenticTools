@@ -103,7 +103,7 @@ public struct AgentAdvisorTool: AgentTool {
         let output = AgentAdvisorToolOutput(
             routePurpose: route.purpose.rawValue,
             profile: route.profile.identifier.rawValue,
-            adapter: route.profile.adapterIdentifier.rawValue,
+            gateway: route.profile.gatewayIdentifier.rawValue,
             model: route.profile.model,
             diagnostics: result.route.diagnostics,
             advice: result.response.message.content.text
