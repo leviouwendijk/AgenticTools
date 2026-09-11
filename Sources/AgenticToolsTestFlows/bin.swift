@@ -65,5 +65,29 @@ enum AgenticToolsFlowSuite:
             try AgenticToolsFlowTesting
                 .runFindToolsInputBounds()
         },
+        TestFlow(
+            "guideline-tools-progressive-disclosure",
+            tags: [
+                "agentic-tools",
+                "guidelines",
+                "tools",
+                "progressive-disclosure",
+            ]
+        ) {
+            try await AgenticToolsFlowTesting
+                .runGuidelineToolsProgressiveDisclosure()
+        },
+        TestFlow(
+            "guideline-tools-search-bounds",
+            tags: [
+                "agentic-tools",
+                "guidelines",
+                "tools",
+                "bounds",
+            ]
+        ) {
+            try await AgenticToolsFlowTesting
+                .runGuidelineToolsSearchBounds()
+        },
     ]
 }

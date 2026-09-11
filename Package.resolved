@@ -1,5 +1,5 @@
 {
-  "originHash" : "3df25c53290c00b2796a35766056f5ad9ecba69ba471381a79d50c8776d94e9d",
+  "originHash" : "07efa3da9e744d5342a2961cc77ecec4b3b6c1d4422798971ada99f6d9374a10",
   "pins" : [
     {
       "identity" : "agentic",
@@ -7,7 +7,7 @@
       "location" : "https://github.com/leviouwendijk/Agentic.git",
       "state" : {
         "branch" : "master",
-        "revision" : "b4271a89701c5bf2b8f96d1c64497c9ec20c3864"
+        "revision" : "6586bbc2fb0b842c82cbf2b189dad6bca2ab0fdc"
       }
     },
     {
@@ -98,6 +98,15 @@
       "state" : {
         "branch" : "master",
         "revision" : "0a5bd3f30af7eaeb79c0ac37007f10322920f95a"
+      }
+    },
+    {
+      "identity" : "guidelinessearch",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/leviouwendijk/GuidelinesSearch.git",
+      "state" : {
+        "branch" : "master",
+        "revision" : "791d4382cfb7434b265398843167b5d9c10060c5"
       }
     },
     {
@@ -196,7 +205,7 @@
       "location" : "https://github.com/leviouwendijk/Schema.git",
       "state" : {
         "branch" : "master",
-        "revision" : "f23bd9c256f0d7b428c30db68bcd097a3a19c63a"
+        "revision" : "703253bef3f4ae18e03bb35e68ac6db0d1bc584d"
       }
     },
     {

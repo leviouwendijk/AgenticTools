@@ -35,6 +35,14 @@ let package = Package(
             branch: "master"
         ),
         .package(
+            url: "https://github.com/leviouwendijk/Guidelines.git",
+            branch: "master"
+        ),
+        .package(
+            url: "https://github.com/leviouwendijk/GuidelinesSearch.git",
+            branch: "master"
+        ),
+        .package(
             url: "https://github.com/leviouwendijk/Primitives.git",
             branch: "master"
         ),
@@ -72,6 +80,14 @@ let package = Package(
                     package: "AgenticWorkspace"
                 ),
                 .product(
+                    name: "Guidelines",
+                    package: "Guidelines"
+                ),
+                .product(
+                    name: "GuidelinesSearch",
+                    package: "GuidelinesSearch"
+                ),
+                .product(
                     name: "Primitives",
                     package: "Primitives"
                 ),
@@ -102,12 +118,12 @@ let package = Package(
                     package: "AgenticExecution"
                 ),
                 .product(
-                    name: "AgenticWorkspace",
-                    package: "AgenticWorkspace"
-                ),
-                .product(
                     name: "Primitives",
                     package: "Primitives"
+                ),
+                .product(
+                    name: "AgenticWorkspace",
+                    package: "AgenticWorkspace"
                 ),
                 .product(
                     name: "TestFlows",
