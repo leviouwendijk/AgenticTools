@@ -1,5 +1,5 @@
 import Schema
-import SchemaMacros
+import Macros
 
 /// List available Agentic skills with optional filtering and body inclusion.
 @JSONSchema

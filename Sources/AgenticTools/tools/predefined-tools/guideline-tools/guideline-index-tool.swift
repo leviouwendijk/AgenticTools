@@ -3,7 +3,7 @@ import AgenticExecution
 import Foundation
 import Guidelines
 import Schema
-import SchemaMacros
+import Macros
 
 @JSONSchema
 public struct GuidelineIndexToolInput:

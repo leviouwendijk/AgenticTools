@@ -4,7 +4,7 @@ import Foundation
 import Guidelines
 import GuidelinesSearch
 import Schema
-import SchemaMacros
+import Macros
 
 @JSONSchema
 public struct ReadGuidelineToolInput:

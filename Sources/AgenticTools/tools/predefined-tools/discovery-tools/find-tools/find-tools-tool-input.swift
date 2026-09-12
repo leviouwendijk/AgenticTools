@@ -1,5 +1,5 @@
 import Schema
-import SchemaMacros
+import Macros
 
 /// Search the installed model-facing Agentic tool catalog and expose the best matches for subsequent model turns.
 @JSONSchema

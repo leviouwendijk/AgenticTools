@@ -1,5 +1,5 @@
 {
-  "originHash" : "07efa3da9e744d5342a2961cc77ecec4b3b6c1d4422798971ada99f6d9374a10",
+  "originHash" : "4417650f7beabb7e638a9d9346e50a501633dc872e36d90f1b4f25eb1c472086",
   "pins" : [
     {
       "identity" : "agentic",
@@ -16,7 +16,7 @@
       "location" : "https://github.com/leviouwendijk/AgenticExecution.git",
       "state" : {
         "branch" : "master",
-        "revision" : "798235f854e7275aeafbcf039dca2a5c22159c66"
+        "revision" : "e7093ca165f45c38a8b28c8bee9e4a67557ef3f4"
       }
     },
     {
@@ -119,6 +119,15 @@
       }
     },
     {
+      "identity" : "macros",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/leviouwendijk/Macros.git",
+      "state" : {
+        "branch" : "master",
+        "revision" : "44885d7ebddc4e9ced6f7cba0deac0ca98da20f1"
+      }
+    },
+    {
       "identity" : "matching",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/leviouwendijk/Matching.git",
@@ -206,15 +215,6 @@
       "state" : {
         "branch" : "master",
         "revision" : "703253bef3f4ae18e03bb35e68ac6db0d1bc584d"
-      }
-    },
-    {
-      "identity" : "schemamacros",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/leviouwendijk/SchemaMacros.git",
-      "state" : {
-        "branch" : "master",
-        "revision" : "2441b49a5159c375b094672a0ba0ae338829ec32"
       }
     },
     {

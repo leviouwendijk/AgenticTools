@@ -1,6 +1,6 @@
 import Agentic
 import Schema
-import SchemaMacros
+import Macros
 
 @JSONSchema
 public struct ReadTranscriptEventsToolInput: Sendable, Codable, Hashable {

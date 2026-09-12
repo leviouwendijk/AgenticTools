@@ -4,7 +4,7 @@ import AgenticWorkspace
 import Foundation
 import Primitives
 import Schema
-import SchemaMacros
+import Macros
 
 @JSONSchema
 public struct EmitArtifactToolInput: Sendable, Codable, Hashable {

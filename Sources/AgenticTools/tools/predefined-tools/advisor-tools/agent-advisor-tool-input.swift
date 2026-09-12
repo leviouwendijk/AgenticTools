@@ -1,5 +1,5 @@
 import Schema
-import SchemaMacros
+import Macros
 
 /// Ask the configured advisor model for bounded advisory reasoning.
 @JSONSchema
