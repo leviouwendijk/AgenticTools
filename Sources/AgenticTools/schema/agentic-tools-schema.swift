@@ -32,3 +32,19 @@ extension TranscriptEventKind:
         .string(cases: allCases.map(\.rawValue))
     }
 }
+
+extension UserInputSpec:
+    @retroactive JSONSchemaProviding
+{
+    public static var jsonschema: JSONSchema {
+        .any
+    }
+}
+
+extension UserInputPresentation:
+    @retroactive JSONSchemaProviding
+{
+    public static var jsonschema: JSONSchema {
+        .any
+    }
+}

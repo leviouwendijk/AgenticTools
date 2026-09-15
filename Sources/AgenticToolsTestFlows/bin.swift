@@ -89,5 +89,17 @@ enum AgenticToolsFlowSuite:
             try await AgenticToolsFlowTesting
                 .runGuidelineToolsSearchBounds()
         },
+        TestFlow(
+            "user-input-semantic-boundary",
+            tags: [
+                "agentic-tools",
+                "interaction",
+                "user-input",
+                "parse-dont-validate",
+            ]
+        ) {
+            try AgenticToolsFlowTesting
+                .runUserInputSemanticBoundary()
+        },
     ]
 }
