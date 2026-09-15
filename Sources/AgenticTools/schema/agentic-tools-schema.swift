@@ -33,6 +33,14 @@ extension TranscriptEventKind:
     }
 }
 
+extension UserInputRequirement:
+    @retroactive JSONSchemaProviding
+{
+    public static var jsonschema: JSONSchema {
+        .string(cases: allCases.map(\.rawValue))
+    }
+}
+
 extension UserInputSpec:
     @retroactive JSONSchemaProviding
 {

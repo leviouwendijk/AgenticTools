@@ -101,5 +101,18 @@ enum AgenticToolsFlowSuite:
             try AgenticToolsFlowTesting
                 .runUserInputSemanticBoundary()
         },
+        TestFlow(
+            "user-input-optionality",
+            tags: [
+                "agentic-tools",
+                "interaction",
+                "user-input",
+                "optional",
+                "skip",
+            ]
+        ) {
+            try AgenticToolsFlowTesting
+                .runUserInputOptionality()
+        },
     ]
 }

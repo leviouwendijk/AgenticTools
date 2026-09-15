@@ -37,10 +37,12 @@ extension AgenticToolsFlowTesting {
         )
 
         try Expect.equal(
-            response.answer,
-            .single_choice(
-                .choice(
-                    "right"
+            response.outcome,
+            .answered(
+                .single_choice(
+                    .choice(
+                        "right"
+                    )
                 )
             ),
             "strong user-input response stores the refined answer"

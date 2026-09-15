@@ -9,6 +9,7 @@ import Schema
 public struct ClarifyWithUserToolInput: Sendable, Codable, Hashable {
     public let prompt: String
     public let reason: String?
+    public let requirement: UserInputRequirement?
     public let input: UserInputSpec
     public let presentation: UserInputPresentation?
     public let metadata: [String: String]
@@ -16,6 +17,7 @@ public struct ClarifyWithUserToolInput: Sendable, Codable, Hashable {
     public init(
         prompt: String,
         reason: String? = nil,
+        requirement: UserInputRequirement? = nil,
         input: UserInputSpec = .text(
             .init()
         ),
@@ -24,6 +26,7 @@ public struct ClarifyWithUserToolInput: Sendable, Codable, Hashable {
     ) {
         self.prompt = prompt
         self.reason = reason
+        self.requirement = requirement
         self.input = input
         self.presentation = presentation
         self.metadata = metadata
@@ -34,6 +37,7 @@ public struct ClarifyWithUserToolInput: Sendable, Codable, Hashable {
             .init(
                 prompt: prompt,
                 reason: reason,
+                requirement: requirement,
                 input: input,
                 presentation: presentation,
                 metadata: metadata
